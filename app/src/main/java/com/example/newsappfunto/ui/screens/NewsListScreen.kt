@@ -1,5 +1,6 @@
 package com.example.newsappfunto.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -20,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,6 +56,7 @@ import com.example.newsappfunto.R
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.model.NewsViewModel.NewsViewState
+import com.example.newsappfunto.navigation.NewsDetails
 
 @Composable
 fun NewsListScreen(
@@ -78,7 +82,7 @@ fun NewsListScreen(
                 Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
             )
             Spacer(Modifier.height(5.dp))
-            InstructionTextDetails("Rick And Morty")
+            InstructionTextDetails("Breaking News")
             when (characters) {
                 is NewsViewModel.NewsViewState.Loading -> {
                     val loading = (characters as NewsViewState.Loading).isLoading
@@ -94,8 +98,19 @@ fun NewsListScreen(
                 }
 
                 is NewsViewState.Success -> {
-                    val articles = (characters as NewsViewState.Success).articles
-                    Recycler(articles,navController)
+                    val articlesList = (characters as NewsViewState.Success).articles
+                    println(articlesList)
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp), // Adds spacing between items
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp) // Padding for the whole list
+                    ) {
+                        items(articlesList) { article ->
+                            CharacterCard(article,navController)
+                        }
+                    }
                 }
 
                 else -> {}
@@ -186,26 +201,24 @@ fun CharacterCard(it: Articles,navController: NavController){
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { navController.navigate(NewsDetails(it.url.toString(),it.author.toString(),it.content.toString(),it.description.toString(),it.publishedAt.toString(),it.title.toString(),it.urlToImage.toString())) }
             .padding(16.dp),
-//            .clickable { navController.navigate(CharactersDetailScreen(it.url)) },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
 
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column (modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally){
             // Book Rank
             Text(
-                text = "Status #${it.title}",
+                text = it.author.toString(),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 ),
-                color = Color(0xFF6200EE),
+                color = Color(0xFF47EE00),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -216,7 +229,8 @@ fun CharacterCard(it: Articles,navController: NavController){
                 modifier = Modifier
                     .size(200.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray),
+                    .background(Color.LightGray)
+                    .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
 
@@ -236,7 +250,7 @@ fun CharacterCard(it: Articles,navController: NavController){
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "by ${it.source}",
+                    text = it.publishedAt.toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     textAlign = TextAlign.Center
@@ -245,7 +259,7 @@ fun CharacterCard(it: Articles,navController: NavController){
 
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = it.publishedAt.toString(),
+                text = it.content.toString(),
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
@@ -255,15 +269,15 @@ fun CharacterCard(it: Articles,navController: NavController){
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Price Section
-            Text(
-                text = "${it.source?.name}",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                ),
-                color = Color(0xFF03DAC5)
-            )
+//            // Price Section
+//            Text(
+//                text = "${it.source?.name}",
+//                style = MaterialTheme.typography.titleMedium.copy(
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = 18.sp
+//                ),
+//                color = Color(0xFF03DAC5)
+//            )
         }
     }
 }
