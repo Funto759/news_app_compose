@@ -66,7 +66,7 @@ fun SavedNewsListScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Column {
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(20.dp))
             Image(
                 colorFilter = ColorFilter.tint(Color.Green),
                 imageVector = Icons.Default.Newspaper,
