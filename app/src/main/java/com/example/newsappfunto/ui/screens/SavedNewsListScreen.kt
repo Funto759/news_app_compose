@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -64,11 +68,22 @@ fun SavedNewsListScreen(
         modifier: Modifier
     ) {
     val viewModel: NewsViewModel = hiltViewModel()
-
+    var searchQuery by remember { mutableStateOf("") }
     val characters by viewModel.NewsArticleState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel) {
         viewModel.getArticles()
+    }
+
+    if (searchQuery.isNotBlank()) {
+        LaunchedEffect(searchQuery) {
+            viewModel.getSearchArticles(searchQuery)
+        }
+    } else {
+        // Optionally, reload articles when search is cleared.
+        LaunchedEffect("clear") {
+            viewModel.getArticles()
+        }
     }
 
     Surface(
@@ -78,9 +93,17 @@ fun SavedNewsListScreen(
         Column {
             Spacer(Modifier.height(20.dp))
             Image(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                colorFilter = ColorFilter.tint(Color.Green),
+                imageVector = Icons.Default.Newspaper,
                 contentDescription = "NYC Logo",
-                Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).height(65.dp).width(65.dp)
+            )
+            SearchField(
+                searchQuery = searchQuery,
+                onQueryChanged = { newQuery ->
+                    searchQuery = newQuery
+                },
+                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
             )
             Spacer(Modifier.height(5.dp))
             InstructionTextDetails("Saved News")

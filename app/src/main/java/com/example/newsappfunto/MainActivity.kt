@@ -9,16 +9,31 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.Bookmarks
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.data.BottomNavItem
+import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.navigation.Navigation
 import com.example.newsappfunto.ui.BottomNavigationBar
 import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
@@ -27,26 +42,7 @@ import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    val bottomNavItem =   listOf(
-        BottomNavItem(
-            name = "Home",
-            route ="CharactersScreen" ,
-            image = Icons.Default.Home,
-            badgeCount = 0
-        ),
-        BottomNavItem(
-            name = "Bookmarks",
-            route ="BookmarkScreen" ,
-            image = Icons.Default.Bookmark,
-            badgeCount = 105
-        ),
-        BottomNavItem(
-            name = "Settings",
-            route ="SettingsScreen" ,
-            image = Icons.Default.Settings,
-            badgeCount = 0
-        )
-    )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +50,48 @@ class MainActivity : ComponentActivity() {
         setContent {
             NewsAppFuntoTheme {
                 val navController = rememberNavController()
+                val viewModel:NewsViewModel = hiltViewModel()
+                val db by viewModel.NewsArticleState.collectAsStateWithLifecycle()
+
+                val currentBackStackEntry by navController.currentBackStackEntryAsState()
+
+                // Use LaunchedEffect keyed on the currentBackStackEntry
+                LaunchedEffect(currentBackStackEntry) {
+                    currentBackStackEntry?.lifecycle?.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                        viewModel.getArticles()
+                    }
+                }
+//                LaunchedEffect (viewModel){
+//                    viewModel.getArticles()
+//                }
+                val articleState = remember { mutableStateOf<List<Articles>>(emptyList()) }
+
+                when(db){
+                    is NewsViewModel.NewsViewState.Success -> {
+                        val article = (db as NewsViewModel.NewsViewState.Success).articles
+                        articleState.value = article
+                        println("Sizesss ${articleState.value.size}")
+                    }
+                    else -> {
+                        articleState.value = emptyList()
+                    }
+                }
+                val bottomNavItem =   listOf(
+                    BottomNavItem(
+                        name = "Home",
+                        route ="CharactersScreen" ,
+                        selectedImage = Icons.Filled.Home,
+                        unSelectedImage = Icons.Outlined.Home,
+                        badgeCount = 0
+                    ),
+                    BottomNavItem(
+                        name = "Saved Articles",
+                        route ="BookmarkScreen" ,
+                        selectedImage = Icons.Filled.Bookmarks,
+                        unSelectedImage = Icons.Outlined.Bookmarks,
+                        badgeCount = articleState.value.size
+                    )
+                )
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     bottomBar = {  BottomNavigationBar(modifier = Modifier.navigationBarsPadding(),items = bottomNavItem
                         , navController = navController, onItemClick = { navController.navigate(it.route)})
