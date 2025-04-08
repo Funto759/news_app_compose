@@ -1,20 +1,31 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 import android.graphics.Bitmap
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.launch
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.outlined.CloudDone
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -128,6 +140,9 @@ fun WebViewScreen(
             modifier = Modifier.fillMaxSize()
         )
 
+        val sheetState = rememberModalBottomSheetState()
+        val scope = rememberCoroutineScope()
+        var showBottomSheet by remember { mutableStateOf(false) }
 
         // Show progress indicator while loading
         if (isLoading) {
@@ -140,6 +155,69 @@ fun WebViewScreen(
             }
         }
 
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center){
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = { showBottomSheet = false },
+                        sheetState = sheetState
+                    ) {
+                        // Use a Column to stack the prompt and the buttons vertically.
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp) // Vertical spacing between items.
+                        ) {
+                            // Prompt message in the center.
+                            Text(
+                                text = "Are you sure you want to remove this article from your saved items?",
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            // First button: Delete Article.
+                            Button(
+                                onClick = {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            showBottomSheet = false
+                                        }
+                                    }
+                                    scope.launch {
+                                        viewModel.SingleGetArticles(url)
+                                        delay(2000)
+                                        viewModel.deleteArticles(articleState.value!!)
+                                        saveState.value = false
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = "Remove Article", color = Color.White)
+                            }
+                            // Second button: Cancel.
+                            Button(
+                                onClick = {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            showBottomSheet = false
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = "Cancel", color = Color.White)
+                            }
+                        }
+                    }
+
+                }
+            }
 
         FloatingActionButton(
             onClick = {
@@ -151,10 +229,11 @@ fun WebViewScreen(
                 saveState.value = true
 
             }else{
-                viewModel.SingleGetArticles(url)
-                    delay(2000)
-                viewModel.deleteArticles(articleState.value!!)
-                saveState.value = false
+                showBottomSheet = true
+//                viewModel.SingleGetArticles(url)
+//                    delay(2000)
+//               viewModel.deleteArticles(articleState.value!!)
+//                saveState.value = false
             }}},
             modifier = Modifier
                 .align(Alignment.BottomEnd)
