@@ -72,7 +72,6 @@ fun WebViewScreen(
             val article = (db as NewsViewModel.NewsViewState.SuccessSingle).articles
             articleState.value = article
             saveState.value = !article.url.isNullOrEmpty()
-//            saveState.value = article.url == url
         }
         else -> {
             articleState.value = null

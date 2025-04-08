@@ -63,10 +63,7 @@ fun NewsListScreen(
 
     val isRefreshing = characters.loadState.refresh is androidx.paging.LoadState.Loading
     val isError = characters.loadState.refresh is androidx.paging.LoadState.Error
-//    val state by viewModel.screenState.collectAsStateWithLifecycle()
-//    LaunchedEffect(viewModel) {
-//        viewModel.getNewsArticles()
-//    }
+
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -126,11 +123,6 @@ fun NewsListScreen(
     }
 
 }
-
-
-
-
-
 
 
 
