@@ -37,6 +37,8 @@ class NewsViewModel @Inject constructor(val api: NewsApi,
     private var _isRefreshing = MutableStateFlow(false)
     val isRefreshing= _isRefreshing.asStateFlow()
 
+
+
 //    val screenState: StateFlow<NewsScreenState> = NewsListState.combine(_isRefreshing) { newsState, refreshing ->
 //        when (newsState) {
 //            is NewsViewState.Success -> NewsScreenState(articles = newsState.articles, isRefreshing = refreshing)

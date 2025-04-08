@@ -66,6 +66,9 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 
+    //Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
 

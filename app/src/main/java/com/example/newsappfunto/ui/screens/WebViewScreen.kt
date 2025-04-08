@@ -141,21 +141,6 @@ fun WebViewScreen(
             }
         }
 
-        // Show error message overlay if there was an error
-//        if (hasError) {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(16.dp),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = errorMessage,
-//                    color = Color.Red
-//                )
-//            }
-//        }
-
 
         FloatingActionButton(
             onClick = {

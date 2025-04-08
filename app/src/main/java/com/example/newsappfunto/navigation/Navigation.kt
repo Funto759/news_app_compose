@@ -8,10 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.androiddevs.mvvmnewsapp.models.Source
-import com.example.newsappfunto.ui.screens.BookmarkScreen
 import com.example.newsappfunto.ui.screens.NewsListScreen
 import com.example.newsappfunto.ui.screens.SavedNewsListScreen
-import com.example.newsappfunto.ui.screens.SettingsScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -19,9 +17,6 @@ fun Navigation(navHostController: NavHostController){
     NavHost(navController = navHostController, startDestination = "CharactersScreen"){
         composable("CharactersScreen"){
             NewsListScreen(navController = navHostController)
-        }
-        composable("SettingsScreen"){
-            SettingsScreen(navController = navHostController,Modifier)
         }
         composable("BookmarkScreen"){
             SavedNewsListScreen(navHostController,Modifier)
