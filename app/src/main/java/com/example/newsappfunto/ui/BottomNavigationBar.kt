@@ -22,6 +22,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.newsappfunto.data.BottomNavItem
 
+/**
+ * Composable function that creates a bottom navigation bar.
+ *
+ * @param items A list of [BottomNavItem] objects representing the navigation items to display.
+ * @param navController The [NavController] used to manage navigation within the application.
+ * @param modifier Optional [Modifier] to apply to the bottom navigation bar.  Defaults to [Modifier].
+ * @param onItemClick Lambda function to be executed when a navigation item is clicked.  It receives the clicked [BottomNavItem] as a parameter.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(

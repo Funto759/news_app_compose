@@ -30,6 +30,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.navigation.NewsDetails
 
+
+/**
+ * Composable function to display a single article item in a list.
+ *
+ * @param it The [Articles] object containing the article data.
+ * @param navController The [NavController] used for navigation to the article details screen.
+ */
 @Composable
 fun ArticleListRecyclerScreen(it: Articles, navController: NavController){
     Card(

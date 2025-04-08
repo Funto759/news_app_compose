@@ -40,9 +40,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.data.BottomNavItem
 import com.example.newsappfunto.model.NewsViewModel
-import com.example.newsappfunto.model.SplashViewModel
 import com.example.newsappfunto.navigation.Navigation
 import com.example.newsappfunto.ui.BottomNavigationBar
+import com.example.newsappfunto.ui.screens.NewsListScreen
 import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -130,6 +130,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     NewsAppFuntoTheme {
-        Greeting("Android")
+        // Create a dummy NavController instance for preview.
+        val navController = rememberNavController()
+       NewsListScreen(navController = navController)
     }
 }

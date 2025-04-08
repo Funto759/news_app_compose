@@ -31,14 +31,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.model.NewsViewModel
+import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 import com.example.newsappfunto.ui.viewsUtil.ArticleListRecyclerScreen
 import com.example.newsappfunto.ui.viewsUtil.FragmentTitleCard
 import com.example.newsappfunto.ui.viewsUtil.SearchField
@@ -127,6 +130,15 @@ fun NewsListScreen(
 
 
 
+/**
+ * A composable function that displays a list of articles with pull-to-refresh functionality and a custom styling.
+ *
+ * @param navController The navigation controller for navigating between screens.
+ * @param items The lazy paging items containing the list of articles.
+ * @param isRefreshing A boolean indicating whether the data is currently being refreshed.
+ * @param onRefresh A callback function to be executed when a refresh is triggered.
+ * @param modifier The modifier to be applied to the composable. Defaults to [Modifier].
+ */
 @Composable
 fun PullToRefreshCustomStyleSample(
     navController: NavController,
@@ -162,6 +174,16 @@ fun PullToRefreshCustomStyleSample(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    NewsAppFuntoTheme {
+        // Create a dummy NavController instance for preview.
+        val navController = rememberNavController()
+        NewsListScreen(navController = navController)
     }
 }
 

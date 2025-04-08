@@ -16,6 +16,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Composable function that displays a title card for a fragment.
+ *
+ * @param display The title text to be displayed on the card.  This should be a string
+ *                that represents the current fragment or section of the application.
+ *                It will be prefixed with a book emoji for visual emphasis.
+ */
 @Composable
 fun FragmentTitleCard(display: String) {
     Card(
