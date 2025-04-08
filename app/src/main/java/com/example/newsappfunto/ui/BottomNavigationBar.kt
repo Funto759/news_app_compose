@@ -80,7 +80,7 @@ val backStackEntry = navController.currentBackStackEntryAsState()
                                 item.name,
                                 textAlign = TextAlign.Center,
                                 fontSize = 10.sp,
-                                color = Color.Green // Apply color to selected text here
+                                color = Color(0xFF1E88E5)// Apply color to selected text here
                             )
                         } else {
 
@@ -88,7 +88,7 @@ val backStackEntry = navController.currentBackStackEntryAsState()
                                 item.name,
                                 textAlign = TextAlign.Center,
                                 fontSize = 10.sp,
-                                color = Color.Gray // Apply color to unselected text here
+                                color = Color(0xFF4D5D6C) // Apply color to unselected text here
                             )
                         }
                     }

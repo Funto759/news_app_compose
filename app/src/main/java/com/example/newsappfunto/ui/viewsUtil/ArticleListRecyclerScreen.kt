@@ -26,9 +26,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.navigation.NewsDetails
+import com.example.newsappfunto.util.formatDate
 
 
 /**
@@ -38,79 +40,83 @@ import com.example.newsappfunto.navigation.NewsDetails
  * @param navController The [NavController] used for navigation to the article details screen.
  */
 @Composable
-fun ArticleListRecyclerScreen(it: Articles, navController: NavController){
+fun ArticleListRecyclerScreen
+            (
+    selectedCategory: String,
+    article: Articles,
+    modifier: Modifier = Modifier,
+    navController: NavController
+
+) {
+    // Each card is clickable to open the article
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { navController.navigate(NewsDetails(it.url.toString(),it.author.toString(),it.content.toString(),it.description.toString(),it.publishedAt.toString(),it.title.toString(),it.urlToImage.toString())) }
-            .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-
-        ) {
-        Column (modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally){
-            // Book Rank
-
-            Text(
-                text = it.title.toString(),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                ),
-                color = Color(0xFF47EE00),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Book Image
-            Image(
-                painter = rememberAsyncImagePainter(it.urlToImage),
-                contentDescription = "Book Cover",
-                modifier = Modifier
-                    .size(200.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Title and Author
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = it.description.toString(),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    textAlign = TextAlign.Center
+        onClick = { navController.navigate(
+            NewsDetails(
+                article.url.toString(),
+                article.author.toString(),
+                article.content.toString(),
+                article.description.toString(),
+                article.publishedAt.toString(),
+                article.title.toString(),
+                article.urlToImage.toString(),
+                selectedCategory
                 )
+        )
+        },
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column {
+            // Header image
+            article.urlToImage?.let { imageUrl ->
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = article.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Title
+            Text( color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                text = article.title.toString(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            // Description (if present)
+            article.description?.let { desc ->
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = it.publishedAt.toString(),
+                Text( color = Color(0xFF4D5D6C),
+                    text = desc,
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            // Author and publication date
             Text(
-                text = it.content.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Justify,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                text = buildString {
+                    if (!article.author.isNullOrBlank()) append("By ${article.author} • ")
+                    append(formatDate(article.publishedAt.toString()))
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.padding(16.dp)
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
         }
     }
 }

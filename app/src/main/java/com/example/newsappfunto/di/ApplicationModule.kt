@@ -25,7 +25,7 @@ object ApplicationModule {
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): NewsArticlesDatabase {
         return Room.databaseBuilder(
-            context, NewsArticlesDatabase::class.java,"News_Articles_Database"
+            context, NewsArticlesDatabase::class.java,"News_Articles_Database2"
         ).build()
     }
 

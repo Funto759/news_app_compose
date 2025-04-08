@@ -19,6 +19,9 @@ interface NewsArticlesDao {
     @Query("SELECT * FROM NewsArticles")
     suspend fun getArticles():List<Articles>
 
+@Query("SELECT * FROM NewsArticles WHERE category = :category")
+    suspend fun getArticlesCategory(category:String):List<Articles>
+
     @Query("SELECT * FROM NewsArticles WHERE url = :url")
     suspend fun getSingleArticles(url:String):Articles
 

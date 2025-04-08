@@ -14,5 +14,6 @@ data class Articles(
     val publishedAt: String?,
     val title: String?,
     val url: String?,
-    val urlToImage: String?
+    val urlToImage: String?,
+    val category: String?
 )

@@ -2,6 +2,7 @@
 
 package com.example.newsappfunto.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,20 +47,29 @@ import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 import com.example.newsappfunto.ui.viewsUtil.ArticleListRecyclerScreen
 import com.example.newsappfunto.ui.viewsUtil.FragmentTitleCard
 import com.example.newsappfunto.ui.viewsUtil.SearchField
+import com.example.newsappfunto.ui.viewsUtil.TitleRowWithMenu
 
 
 @Composable
 fun NewsListScreen(
     navController: NavController,
 ) {
-
+    val context = LocalContext.current
     val viewModel: NewsViewModel = hiltViewModel()
+
+    var selectedCategory by remember {
+        mutableStateOf(
+            context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+                .getString("selected_category", "business") ?: "business"
+        )
+    }
+    // Other state variables…
     var searchQuery by remember { mutableStateOf("") }
-    val newsFlow = remember(searchQuery) {
+    val newsFlow = remember(selectedCategory, searchQuery) {
         if (searchQuery.isNotBlank()) {
             viewModel.getSearchNews(searchQuery)
         } else {
-            viewModel.getNews()
+            viewModel.getNews(selectedCategory)
         }
     }
     val characters = newsFlow.collectAsLazyPagingItems()
@@ -75,7 +86,7 @@ fun NewsListScreen(
         Column {
             Spacer(Modifier.height(20.dp))
             Image(
-                colorFilter = ColorFilter.tint(Color.Green),
+                colorFilter = ColorFilter.tint(Color(0xFF4D5D6C)),
                 imageVector = Icons.Default.Newspaper,
                 contentDescription = "NYC Logo",
                 modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally).height(65.dp)
@@ -91,7 +102,7 @@ fun NewsListScreen(
             when (characters.loadState.refresh) {
                 is LoadState.Loading -> {
                         Spacer(Modifier.height(5.dp))
-                        FragmentTitleCard("Breaking News")
+                    TitleRowWithMenu(selectedCategory.uppercase(), onClick = {})
                         Box(modifier = Modifier.fillMaxSize()) {
                             CircularProgressIndicator(
                                 modifier = Modifier.align(Alignment.Center).padding(10.dp)
@@ -102,7 +113,7 @@ fun NewsListScreen(
 
                 is LoadState.Error -> {
                         Spacer(Modifier.height(5.dp))
-                        FragmentTitleCard("Breaking News")
+                    TitleRowWithMenu(selectedCategory.uppercase(), onClick = {})
 //                        val error = (characters as NewsViewState.Error).message
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
@@ -114,9 +125,10 @@ fun NewsListScreen(
 
                 else -> {
                     println(characters)
-                    PullToRefreshCustomStyleSample(
+                    PullToRefreshCustomStyleSample(selectedCategory = selectedCategory, viewModel,
                         navController, characters, isRefreshing = isRefreshing,
                         onRefresh = { characters.refresh() },
+                        onCLick = {selectedCategory = it},
                         modifier = Modifier
                     )
                 }
@@ -141,10 +153,13 @@ fun NewsListScreen(
  */
 @Composable
 fun PullToRefreshCustomStyleSample(
+    selectedCategory: String,
+    viewModel: NewsViewModel,
     navController: NavController,
     items: LazyPagingItems<Articles>,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    onCLick:(String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state = rememberPullToRefreshState()
@@ -157,7 +172,9 @@ fun PullToRefreshCustomStyleSample(
     ) {
         Column {
             Spacer(Modifier.height(5.dp))
-            FragmentTitleCard("Breaking News")
+            TitleRowWithMenu(selectedCategory.uppercase(), onClick = {
+                onCLick(it)
+            })
             Spacer(Modifier.height(5.dp))
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp), // Adds spacing between items
@@ -169,7 +186,7 @@ fun PullToRefreshCustomStyleSample(
                 items(count = items.itemCount) {
                     val char = items[it]
                     if (char != null) {
-                        ArticleListRecyclerScreen(char, navController)
+                        ArticleListRecyclerScreen(selectedCategory,char, Modifier,navController)
                     }
                 }
             }

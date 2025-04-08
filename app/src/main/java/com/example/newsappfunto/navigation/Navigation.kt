@@ -23,7 +23,7 @@ fun Navigation(navHostController: NavHostController){
         }
         composable<NewsDetails>{
             val args =it.toRoute<NewsDetails>()
-            WebViewScreen(navHostController, url = args.url, author = args.author.toString(), content = args.content.toString(), description = args.description.toString(), publishedAt = args.publishedAt.toString(), title = args.title.toString(), urlToImage = args.urlToImage.toString())
+            WebViewScreen(navHostController, url = args.url, author = args.author.toString(), content = args.content.toString(), description = args.description.toString(), publishedAt = args.publishedAt.toString(), title = args.title.toString(), urlToImage = args.urlToImage.toString(), category = args.category)
         }
     }
 }
@@ -37,5 +37,6 @@ data class NewsDetails (
     val publishedAt: String?,
     val title: String?,
     val urlToImage: String?,
+    val category: String?
 
         )

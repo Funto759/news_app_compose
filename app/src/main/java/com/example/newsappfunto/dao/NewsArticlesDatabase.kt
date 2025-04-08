@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.example.newsappfunto.data.Articles
 
 
-@Database(entities = [Articles::class], version = 1, exportSchema = false)
+@Database(entities = [Articles::class], version = 3, exportSchema = false)
 abstract class NewsArticlesDatabase :RoomDatabase(){
     abstract fun getDao(): NewsArticlesDao
 }

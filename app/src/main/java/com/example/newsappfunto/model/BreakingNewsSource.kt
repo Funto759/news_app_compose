@@ -9,12 +9,12 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class BreakingNewsSource @Inject constructor(private val api: NewsApi) : PagingSource<Int, Articles>() {
+class BreakingNewsSource @Inject constructor(private val api: NewsApi,val category: String) : PagingSource<Int, Articles>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Articles> {
         val position = params.key ?: 1
         return try {
-            val response = api.getBreakingNews(pageNumber = position)
+            val response = api.getBreakingNews(category = category ,pageNumber = position)
             if (response.isSuccessful) {
                 val body = response.body()
                 val articles = body?.articles ?: emptyList()

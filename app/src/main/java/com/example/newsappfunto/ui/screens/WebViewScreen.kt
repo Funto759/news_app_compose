@@ -58,7 +58,8 @@ fun WebViewScreen(
     description: String,
     publishedAt: String,
     title: String,
-    urlToImage: String
+    urlToImage: String,
+    category: String? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     val viewModel: NewsViewModel = hiltViewModel()
@@ -225,7 +226,7 @@ fun WebViewScreen(
                 if (!saveState.value){
                     delay(2000)
                 viewModel.saveArticles(Articles(
-                    url = url, author = author.toString(), content = content.toString(), description = description.toString(), publishedAt = publishedAt.toString(), title = title.toString(), urlToImage = urlToImage.toString()))
+                    url = url, author = author.toString(), content = content.toString(), description = description.toString(), publishedAt = publishedAt.toString(), title = title.toString(), urlToImage = urlToImage.toString(), category = category.toString()))
                 saveState.value = true
 
             }else{

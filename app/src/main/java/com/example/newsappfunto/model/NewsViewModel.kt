@@ -53,9 +53,9 @@ class NewsViewModel @Inject constructor(val api: NewsApi,
      *
      * @return A `Flow` of `PagingData<Articles>`, representing a paginated stream of breaking news articles.
      */
-    fun getNews() : Flow<PagingData<Articles>> {
+    fun getNews(category: String) : Flow<PagingData<Articles>> {
         return Pager(
-            config = PagingConfig(10, enablePlaceholders = false), pagingSourceFactory = {BreakingNewsSource(api)}
+            config = PagingConfig(10, enablePlaceholders = false), pagingSourceFactory = {BreakingNewsSource(api,category)}
         ).flow.cachedIn(viewModelScope)
     }
 
@@ -96,6 +96,21 @@ class NewsViewModel @Inject constructor(val api: NewsApi,
             _NewsArticleState.value = NewsViewState.Loading(true)
             try {
                 val result = db.getDao().getArticles()
+                println(result)
+                _NewsArticleState.value = NewsViewState.Success(result)
+            } catch (e:Exception){
+                println(e)
+            }
+        }
+    }
+
+    fun getArticlesCategory(category: String){
+        viewModelScope.launch {
+            _NewsArticleState.value = NewsViewState.Loading(true)
+            try {
+                val result = db.getDao().getArticlesCategory(category = category)
+                println(category)
+                println(result)
                 _NewsArticleState.value = NewsViewState.Success(result)
             } catch (e:Exception){
                 println(e)
