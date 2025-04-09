@@ -44,6 +44,7 @@ import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 
 @Composable
 fun TitleRowWithMenu(
+    search : (String) -> Unit,
     display: String,
     onClick: (String) -> Unit
 ) {
@@ -78,6 +79,7 @@ fun TitleRowWithMenu(
             )
             // Dropdown menu icon.
             MinimalDropdownMenu(
+                search = {search(it)},
                 selectedOption = name,
                 onClick = {
                     name = it
@@ -90,6 +92,7 @@ fun TitleRowWithMenu(
 
 @Composable
 fun MinimalDropdownMenu(
+    search : (String) -> Unit,
     selectedOption: String,
     onClick: (String) -> Unit
 ) {
@@ -100,7 +103,9 @@ fun MinimalDropdownMenu(
     Box(modifier = Modifier.padding(start = 8.dp)) {
         IconButton(
             colors = IconButtonDefaults.iconButtonColors(),
-            onClick = { expanded = !expanded }
+            onClick = {
+                search("")
+                expanded = !expanded }
         ) {
             Icon(
                 imageVector = Icons.Filled.FilterList,
@@ -153,13 +158,3 @@ private fun saveSelectedCategory(context: Context, category: String) {
     sharedPref.edit().putString("selected_category", category).apply()
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TitleRowWithMenuPreview() {
-    NewsAppFuntoTheme {
-        TitleRowWithMenu(display = "Breaking News") { selected ->
-            // Dummy callback for preview.
-            println("Selected category: $selected")
-        }
-    }
-}

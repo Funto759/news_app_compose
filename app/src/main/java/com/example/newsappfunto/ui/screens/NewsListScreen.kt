@@ -100,7 +100,9 @@ fun NewsListScreen(
             when (characters.loadState.refresh) {
                 is LoadState.Loading -> {
                         Spacer(Modifier.height(5.dp))
-                    TitleRowWithMenu(selectedCategory.uppercase(), onClick = {})
+                    TitleRowWithMenu(
+                        search = {searchQuery =it},
+                        selectedCategory.uppercase(), onClick = {})
                         Box(modifier = Modifier.fillMaxSize()) {
                             CircularProgressIndicator(
                                 modifier = Modifier.align(Alignment.Center).padding(10.dp)
@@ -111,7 +113,9 @@ fun NewsListScreen(
 
                 is LoadState.Error -> {
                         Spacer(Modifier.height(5.dp))
-                    TitleRowWithMenu(selectedCategory.uppercase(), onClick = {})
+                    TitleRowWithMenu(
+                        search = {searchQuery = it},
+                        selectedCategory.uppercase(), onClick = {})
 //                        val error = (characters as NewsViewState.Error).message
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
@@ -123,10 +127,14 @@ fun NewsListScreen(
 
                 else -> {
                     println(characters)
-                    PullToRefreshCustomStyleSample(selectedCategory = selectedCategory, viewModel,
+                    PullToRefreshCustomStyleSample(
+                        search = {searchQuery = it},
+                        selectedCategory = selectedCategory, viewModel,
                         navController, characters, isRefreshing = isRefreshing,
                         onRefresh = { characters.refresh() },
-                        onCLick = {selectedCategory = it},
+                        onCLick = {
+                            searchQuery = ""
+                            selectedCategory = it},
                         modifier = Modifier
                     )
                 }
@@ -151,6 +159,7 @@ fun NewsListScreen(
  */
 @Composable
 fun PullToRefreshCustomStyleSample(
+    search:(String) -> Unit,
     selectedCategory: String,
     viewModel: NewsViewModel,
     navController: NavController,
@@ -170,7 +179,10 @@ fun PullToRefreshCustomStyleSample(
     ) {
         Column {
             Spacer(Modifier.height(5.dp))
-            TitleRowWithMenu(selectedCategory.uppercase(), onClick = {
+            TitleRowWithMenu(
+                search = {search(it)},
+                selectedCategory.uppercase(),
+            onClick = {
                 onCLick(it)
             })
             Spacer(Modifier.height(5.dp))

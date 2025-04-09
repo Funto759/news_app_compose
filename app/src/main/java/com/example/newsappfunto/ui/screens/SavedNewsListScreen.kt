@@ -119,6 +119,7 @@ fun SavedNewsListScreen(
                     )
                     Spacer(Modifier.height(5.dp))
                     TitleRowWithMenuSave(
+                        search = {searchQuery = it},
                         display = selectedCategory,
                         onClick = { selectedCategory = it })
                     if (articlesList.isEmpty()) {

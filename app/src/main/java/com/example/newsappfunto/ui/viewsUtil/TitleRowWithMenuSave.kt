@@ -45,6 +45,7 @@ import androidx.core.content.edit
 
 @Composable
 fun TitleRowWithMenuSave(
+    search : (String) -> Unit,
     display: String,
     onClick: (String) -> Unit
 ) {
@@ -79,6 +80,7 @@ fun TitleRowWithMenuSave(
             )
             // Dropdown menu icon.
             MinimalDropdownMenuSave(
+                search = {search(it)},
                 selectedOption = name,
                 onClick = {
                     name = it
@@ -91,6 +93,7 @@ fun TitleRowWithMenuSave(
 
 @Composable
 fun MinimalDropdownMenuSave(
+    search : (String) -> Unit,
     selectedOption: String,
     onClick: (String) -> Unit
 ) {
@@ -101,7 +104,9 @@ fun MinimalDropdownMenuSave(
     Box(modifier = Modifier.padding(start = 8.dp)) {
         IconButton(
             colors = IconButtonDefaults.iconButtonColors(),
-            onClick = { expanded = !expanded }
+            onClick = {
+                search("")
+                expanded = !expanded }
         ) {
             Icon(
                 imageVector = Icons.Filled.FilterList,
