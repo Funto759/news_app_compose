@@ -56,15 +56,13 @@ fun NewsListScreen(
 ) {
     val context = LocalContext.current
     val viewModel: NewsViewModel = hiltViewModel()
-
-    var selectedCategory by remember {
-        mutableStateOf(
+    var selectedCategory by remember { mutableStateOf(
             context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
                 .getString("selected_category", "business") ?: "business"
         )
     }
-    // Other state variables…
     var searchQuery by remember { mutableStateOf("") }
+
     val newsFlow = remember(selectedCategory, searchQuery) {
         if (searchQuery.isNotBlank()) {
             viewModel.getSearchNews(searchQuery)

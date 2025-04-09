@@ -111,7 +111,7 @@ fun ArticleListRecyclerScreen
             Text(
                 text = buildString {
                     if (!article.author.isNullOrBlank()) append("By ${article.author} • ")
-                    append(formatDate(article.publishedAt.toString()))
+                    if(!article.publishedAt.isNullOrBlank()) append(formatDate(article.publishedAt.toString()))
                 },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),

@@ -231,10 +231,6 @@ fun WebViewScreen(
 
             }else{
                 showBottomSheet = true
-//                viewModel.SingleGetArticles(url)
-//                    delay(2000)
-//               viewModel.deleteArticles(articleState.value!!)
-//                saveState.value = false
             }}},
             modifier = Modifier
                 .align(Alignment.BottomEnd)

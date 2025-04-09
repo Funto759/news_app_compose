@@ -41,6 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.ui.screens.NewsListScreen
 import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
+import androidx.core.content.edit
 
 @Composable
 fun TitleRowWithMenuSave(
@@ -150,6 +151,6 @@ fun MinimalDropdownMenuSave(
 
 private fun saveSelectedCategory(context: Context, category: String) {
     val sharedPref = context.getSharedPreferences("MyPref2", Context.MODE_PRIVATE)
-    sharedPref.edit().putString("selected_category2", category).apply()
+    sharedPref.edit() { putString("selected_category2", category) }
 }
 
