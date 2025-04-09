@@ -91,7 +91,7 @@ fun NewsListScreen(
                     .width(65.dp)
             )
             SearchField(
-                searchQuery = searchQuery,
+                initialQuery = searchQuery,
                 onQueryChanged = { newQuery ->
                     searchQuery = newQuery
                 },

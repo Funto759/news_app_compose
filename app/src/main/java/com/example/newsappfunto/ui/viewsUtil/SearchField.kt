@@ -7,8 +7,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 /**
  * A composable function that creates a search field for users to input search queries.
@@ -20,13 +26,21 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun SearchField(
-    searchQuery: String,
+    initialQuery: String = "",
+    debounceDuration: Long = 1000,
     onQueryChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var query by remember { mutableStateOf(initialQuery) }
+    // Trigger search only after the user stops typing for debounceDuration.
+    LaunchedEffect(query) {
+        delay(debounceDuration)
+       onQueryChanged(query)
+    }
+
     androidx.compose.material3.TextField(
-        value = searchQuery,
-        onValueChange = onQueryChanged,
+        value = query,
+        onValueChange = { query = it },
         placeholder = { Text(text = "Search") },
         leadingIcon = {
             Icon(
