@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.example.newsappfunto.ui.screens
+package com.example.newsappfunto.ui.screens.ArticleScreen
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -12,18 +12,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,11 +49,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.newsappfunto.R
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 import com.example.newsappfunto.ui.viewsUtil.ArticleListRecyclerScreen
-import com.example.newsappfunto.ui.viewsUtil.FragmentTitleCard
 import com.example.newsappfunto.ui.viewsUtil.SearchField
 import com.example.newsappfunto.ui.viewsUtil.TitleRowWithMenu
 
@@ -53,6 +61,7 @@ import com.example.newsappfunto.ui.viewsUtil.TitleRowWithMenu
 @Composable
 fun NewsListScreen(
     navController: NavController,
+    scaffoldState: SnackbarHostState
 ) {
     val context = LocalContext.current
     val viewModel: NewsViewModel = hiltViewModel()
@@ -73,8 +82,13 @@ fun NewsListScreen(
     val characters = newsFlow.collectAsLazyPagingItems()
 
 
-    val isRefreshing = characters.loadState.refresh is androidx.paging.LoadState.Loading
-    val isError = characters.loadState.refresh is androidx.paging.LoadState.Error
+    LaunchedEffect(selectedCategory) {
+        scaffoldState.showSnackbar(message = "${selectedCategory.uppercase()} Category selected",duration = SnackbarDuration.Short)
+    }
+
+
+    val isRefreshing = characters.loadState.refresh is LoadState.Loading
+    val isError = characters.loadState.refresh is LoadState.Error
 
 
     Surface(
@@ -116,12 +130,26 @@ fun NewsListScreen(
                     TitleRowWithMenu(
                         search = {searchQuery = it},
                         selectedCategory.uppercase(), onClick = {})
-//                        val error = (characters as NewsViewState.Error).message
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            Text(
-                                text = "error",
-                                modifier = Modifier.align(Alignment.Center).padding(10.dp)
-                            )
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.open_carton_box_svgrepo_com),
+                                    contentDescription = "No articles",
+                                    modifier = Modifier.size(150.dp)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "Maximum number of 100 articles reached wait 24hr before count is restarted",
+                                    textAlign = TextAlign.Center,
+                                    color = Color.Gray,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                 }
 
@@ -204,13 +232,13 @@ fun PullToRefreshCustomStyleSample(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NewsAppFuntoTheme {
-        // Create a dummy NavController instance for preview.
-        val navController = rememberNavController()
-        NewsListScreen(navController = navController)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    NewsAppFuntoTheme {
+//        // Create a dummy NavController instance for preview.
+//        val navController = rememberNavController()
+//        NewsListScreen(navController = navController)
+//    }
+//}
 

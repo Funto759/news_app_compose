@@ -1,6 +1,7 @@
 package com.example.newsappfunto.model
 
 import android.icu.text.StringSearch
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.service.NewsApi

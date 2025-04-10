@@ -1,4 +1,4 @@
-package com.example.newsappfunto.ui.screens
+package com.example.newsappfunto.ui.screens.SavedArticleScreen
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,15 +45,14 @@ import com.example.newsappfunto.R
 import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.model.NewsViewModel.NewsViewState
 import com.example.newsappfunto.ui.viewsUtil.ArticleListRecyclerScreen
-import com.example.newsappfunto.ui.viewsUtil.FragmentTitleCard
 import com.example.newsappfunto.ui.viewsUtil.SearchField
-import com.example.newsappfunto.ui.viewsUtil.TitleRowWithMenu
 import com.example.newsappfunto.ui.viewsUtil.TitleRowWithMenuSave
 
 @Composable
 fun SavedNewsListScreen(
     navController: NavController,
-    modifier: Modifier
+    modifier: Modifier,
+    scaffoldState: SnackbarHostState
 ) {
     val context = LocalContext.current
     val viewModel: NewsViewModel = hiltViewModel()
@@ -62,7 +65,7 @@ fun SavedNewsListScreen(
     }
 
 
-    LaunchedEffect(Pair(selectedCategory, searchQuery)) {
+    LaunchedEffect(selectedCategory, searchQuery) {
         if (searchQuery.isNotBlank()) {
             viewModel.getSearchArticles(searchQuery)
         } else if (selectedCategory == "all") {
@@ -70,6 +73,12 @@ fun SavedNewsListScreen(
         } else {
             viewModel.getArticlesCategory(selectedCategory)
         }
+    }
+
+
+
+    LaunchedEffect(selectedCategory) {
+        scaffoldState.showSnackbar(message = "${selectedCategory.uppercase()} Category selected",duration = SnackbarDuration.Short)
     }
 
     val characters by viewModel.NewsArticleState.collectAsStateWithLifecycle()
@@ -127,6 +136,13 @@ fun SavedNewsListScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
+                            val textTitle = remember { mutableStateOf("No articles found under \"${selectedCategory.uppercase()}\" category.") }
+                            if (selectedCategory == "all") {
+                                textTitle.value = "No Saved articles found"
+                            }else{
+                                textTitle.value = "No articles found under \"${selectedCategory.uppercase()}\" category."
+                            }
+
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -138,7 +154,7 @@ fun SavedNewsListScreen(
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
-                                    text = "No articles found under \"${selectedCategory.uppercase()}\" category.",
+                                    text = textTitle.value,
                                     textAlign = TextAlign.Center,
                                     color = Color.Gray,
                                     style = MaterialTheme.typography.bodyMedium

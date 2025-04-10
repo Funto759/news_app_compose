@@ -12,7 +12,10 @@ import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -87,17 +90,19 @@ class MainActivity : ComponentActivity() {
                         badgeCount = articleState.value.size
                     )
                 )
-
+                val scaffoldState = remember { SnackbarHostState() }
 
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         BottomNavigationBar(modifier = Modifier.navigationBarsPadding(),items = bottomNavItem
                         , navController = navController, onItemClick = { navController.navigate(it.route)})
-                    }
+                    },
+                    snackbarHost = {SnackbarHost(hostState = scaffoldState)}
                 )
                 { innerPadding ->
+
                     Surface (modifier = Modifier.padding(innerPadding).navigationBarsPadding()){
-                        Navigation(navController)
+                        Navigation(navController,scaffoldState)
                     }
                 }
             }
