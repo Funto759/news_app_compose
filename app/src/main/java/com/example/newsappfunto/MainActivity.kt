@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -33,7 +32,7 @@ import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.data.BottomNavItem
 import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.navigation.Navigation
-import com.example.newsappfunto.ui.BottomNavigationBar
+import com.example.newsappfunto.navigation.bottomNav.BottomNavigationBar
 import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -41,21 +39,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.newsappfunto.R
 import com.example.newsappfunto.data.Articles
 import com.example.newsappfunto.model.NewsViewModel
-import com.example.newsappfunto.ui.theme.NewsAppFuntoTheme
 import com.example.newsappfunto.ui.viewsUtil.ArticleListRecyclerScreen
+import com.example.newsappfunto.ui.viewsUtil.EmptyItemView
 import com.example.newsappfunto.ui.viewsUtil.SearchField
-import com.example.newsappfunto.ui.viewsUtil.TitleRowWithMenu
 
 
 @Composable
@@ -130,27 +125,8 @@ fun NewsListScreen(
                     TitleRowWithMenu(
                         search = {searchQuery = it},
                         selectedCategory.uppercase(), onClick = {})
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.open_carton_box_svgrepo_com),
-                                    contentDescription = "No articles",
-                                    modifier = Modifier.size(150.dp)
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = "Maximum number of 100 articles reached wait 24hr before count is restarted",
-                                    textAlign = TextAlign.Center,
-                                    color = Color.Gray,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
+                    val errorText = "Maximum number of 100 articles reached wait 24hr before count is restarted"
+                      EmptyItemView(errorText,Modifier)
                 }
 
                 else -> {

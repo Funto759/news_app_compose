@@ -1,4 +1,4 @@
-package com.example.newsappfunto.ui.viewsUtil
+package com.example.newsappfunto.ui.screens.ArticleScreen
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement

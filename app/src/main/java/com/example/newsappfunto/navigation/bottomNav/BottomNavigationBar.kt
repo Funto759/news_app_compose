@@ -1,4 +1,4 @@
-package com.example.newsappfunto.ui
+package com.example.newsappfunto.navigation.bottomNav
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +8,6 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Text
 import androidx.compose.material3.Badge
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
