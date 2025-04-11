@@ -18,16 +18,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.newsappfunto.R
 
+/**
+ * Composable function to display a view when no articles are found, based on the selected category.
+ *
+ * @param selectedCategory The currently selected category.  Determines the message displayed.  If "all", a generic "No saved articles" message is shown. Otherwise, a category-specific message is shown (e.g., "No articles found under 'TECHNOLOGY' category").
+ * @param modifier Optional [Modifier] to apply to the outer [Box].
+ */
 @Composable
 fun EmptyItemView(selectedCategory: String,modifier: Modifier){
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val textTitle = if (selectedCategory == "all") {
-            "No Saved articles found"
-        } else {
-            "No articles found under \"${selectedCategory.uppercase()}\" category."
+        val textTitle = when (selectedCategory) {
+            "all" -> {
+                "No Saved articles found"
+            }
+            "main" -> {
+                "Maximum number of 100 articles reached wait 24hr before count is restarted"
+            }
+            else -> {
+                "No articles found under \"${selectedCategory.uppercase()}\" category."
+            }
         }
 
         Column(

@@ -119,13 +119,12 @@ fun NewsListScreen(
                         }
                 }
 
-
                 is LoadState.Error -> {
                         Spacer(Modifier.height(5.dp))
                     TitleRowWithMenu(
                         search = {searchQuery = it},
                         selectedCategory.uppercase(), onClick = {})
-                    val errorText = "Maximum number of 100 articles reached wait 24hr before count is restarted"
+                    val errorText = "main"
                       EmptyItemView(errorText,Modifier)
                 }
 
@@ -161,6 +160,7 @@ fun NewsListScreen(
  * @param onRefresh A callback function to be executed when a refresh is triggered.
  * @param modifier The modifier to be applied to the composable. Defaults to [Modifier].
  */
+@ExperimentalMaterial3Api
 @Composable
 fun PullToRefreshCustomStyleSample(
     search:(String) -> Unit,
