@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.newsappfunto.model.FirebaseAuthentificationViewModel
+import com.example.newsappfunto.model.FirebaseAuthentificationViewModel.FirebaseViewState
 import com.example.newsappfunto.model.NewsViewModel
 import com.example.newsappfunto.model.NewsViewModel.NewsViewState
 
@@ -33,35 +35,49 @@ fun SavedNewsListScreen(
 ) {
     val context = LocalContext.current
     val viewModel: NewsViewModel = hiltViewModel()
+    val signUpViewModel: FirebaseAuthentificationViewModel = hiltViewModel()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember {
         mutableStateOf(
             context.getSharedPreferences("MyPref2", Context.MODE_PRIVATE)
-                .getString("selected_category2", "business") ?: "business"
+                .getString("selected_category2", "all") ?: "business"
         )
     }
+//    LaunchedEffect(Unit) {
+//        signUpViewModel.retrieveArticlesListener(selectedCategory)
+//    }
+//    LaunchedEffect(selectedCategory, searchQuery) {
+//        if (searchQuery.isNotBlank()) {
+//            viewModel.getSearchArticles(searchQuery)
+//        } else if (selectedCategory == "all") {
+//            viewModel.getArticles()
+//        } else {
+//            viewModel.getArticlesCategory(selectedCategory)
+//        }
+//    }
     LaunchedEffect(selectedCategory, searchQuery) {
         if (searchQuery.isNotBlank()) {
-            viewModel.getSearchArticles(searchQuery)
+            signUpViewModel.retrieveArticlesSearchListener(searchQuery)
         } else if (selectedCategory == "all") {
-            viewModel.getArticles()
+            signUpViewModel.retrieveArticlesListener()
         } else {
-            viewModel.getArticlesCategory(selectedCategory)
+            signUpViewModel.retrieveArticlesCategoryListener(selectedCategory)
         }
     }
 //    LaunchedEffect(selectedCategory) {
 //        scaffoldState.showSnackbar(message = "${selectedCategory.uppercase()} Category selected",duration = SnackbarDuration.Short)
 //    }
 
-    val characters by viewModel.NewsArticleState.collectAsStateWithLifecycle()
+//    val characters by viewModel.NewsArticleState.collectAsStateWithLifecycle()
+    val characters by signUpViewModel.articlesFlow.collectAsStateWithLifecycle()
 
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
     ) {
         when (characters) {
-            is NewsViewModel.NewsViewState.Loading -> {
-                val loading = (characters as NewsViewState.Loading).isLoading
+            is FirebaseViewState.Loading -> {
+                val loading = (characters as FirebaseViewState.Loading).loading
                 if (loading) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
@@ -71,14 +87,14 @@ fun SavedNewsListScreen(
                 }
             }
 
-            is NewsViewState.Error -> {
-                val error = (characters as NewsViewState.Error).message
+            is FirebaseViewState.Error -> {
+                val error = (characters as FirebaseViewState.Error).message
                 Text(error)
 
             }
 
-            is NewsViewState.Success -> {
-                val articlesList = (characters as NewsViewState.Success).articles
+            is FirebaseViewState.Success -> {
+                val articlesList = (characters as FirebaseViewState.Success).articles
                 println(articlesList)
              SavedArticlesRecyclerView(selectedCategory, searchQuery, articlesList, navController, searchCall = {searchQuery = it}, categoryCall = {selectedCategory = it})
             }

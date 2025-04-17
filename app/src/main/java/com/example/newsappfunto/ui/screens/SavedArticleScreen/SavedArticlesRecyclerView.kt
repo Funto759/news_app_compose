@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +32,7 @@ fun SavedArticlesRecyclerView(selectedCategory: String, searchQuery: String, art
     Column {
         Spacer(Modifier.height(20.dp))
         Image(
-            colorFilter = ColorFilter.tint(Color(0xFF1E88E5)),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             imageVector = Icons.Default.Newspaper,
             contentDescription = "NYC Logo",
             modifier = Modifier
