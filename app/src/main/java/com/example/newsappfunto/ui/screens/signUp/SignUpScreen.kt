@@ -250,7 +250,7 @@ fun SignUpScreen(navController: NavController,scaffoldState: SnackbarHostState) 
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
-                        onClick = { viewModel.signUp(User(email = input.email, password = input.password, firstname = input.firstname, lastname = input.lastname, phoneNumber = input.phoneNumber)) },
+                        onClick = { viewModel.signUp(User(email = input.email, password = input.password, firstname = input.firstname.capitalizeFirst(), lastname = input.lastname.capitalizeFirst(), phoneNumber = input.phoneNumber)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -273,4 +273,7 @@ fun SignUpScreen(navController: NavController,scaffoldState: SnackbarHostState) 
         }
     }
 }
+
+fun String.capitalizeFirst(): String =
+    replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 

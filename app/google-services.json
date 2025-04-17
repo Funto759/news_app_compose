@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "104978888476",
+    "project_id": "newsapp-funto",
+    "storage_bucket": "newsapp-funto.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:104978888476:android:723c623e07f6bc5957ecd9",
+        "android_client_info": {
+          "package_name": "com.example.newsappfunto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_w-NbSjObrPBLeOGlegrFtJa8hepgguA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

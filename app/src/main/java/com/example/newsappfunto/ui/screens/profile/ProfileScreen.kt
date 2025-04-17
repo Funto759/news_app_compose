@@ -65,6 +65,10 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        signUpViewModel.retrieveUser()
+    }
+
     LaunchedEffect(status) {
         when(status){
             is FirebaseAuthentificationViewModel.FirebaseViewState.UnAuthenticated ->{

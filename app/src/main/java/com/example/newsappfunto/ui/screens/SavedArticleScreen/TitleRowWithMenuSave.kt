@@ -1,17 +1,27 @@
 package com.example.newsappfunto.ui.screens.SavedArticleScreen
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -27,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -93,13 +104,20 @@ fun MinimalDropdownMenuSave(
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val options = listOf("all","business", "entertainment", "health", "general", "science", "sports", "technology")
-
-    Box(modifier = Modifier.padding(start = 8.dp)) {
-        IconButton(
-            colors = IconButtonDefaults.iconButtonColors(),
+    Box(modifier = Modifier.padding(start = 16.dp, top = 8.dp)) {
+        // Trigger button (pill-shaped purple button)
+        Button(
             onClick = {
-                search("")
-                expanded = !expanded }
+                search("")       // clear any search filter
+                expanded = !expanded
+            },
+            shape = RoundedCornerShape(24.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor   = MaterialTheme.colorScheme.onPrimary
+            ),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            elevation       = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
         ) {
             Icon(
                 imageVector = Icons.Filled.FilterList,
@@ -107,30 +125,35 @@ fun MinimalDropdownMenuSave(
                 tint = Color(0xFF1E88E5)
             )
         }
+
+        // Dropdown menu
         DropdownMenu(
-            containerColor = Color(0xFF1E88E5),
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(vertical = 4.dp)
+                .width(IntrinsicSize.Min),
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
                     text = {
-                        // Using a Row to place the option text and checkmark.
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = option.uppercase(),
-                                color = Color.White
+                                text = option.replaceFirstChar { it.uppercaseChar() },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
-                            // If this option is the selected one, display a checkmark.
                             if (option.equals(selectedOption, ignoreCase = true)) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Check, // Replace with a checkmark icon if desired.
+                                    imageVector = Icons.Default.Check,
                                     contentDescription = "Selected",
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -140,7 +163,10 @@ fun MinimalDropdownMenuSave(
                         saveSelectedCategory(context, option)
                         onClick(option)
                         expanded = false
-                    }
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clip(RoundedCornerShape(8.dp))
                 )
             }
         }
