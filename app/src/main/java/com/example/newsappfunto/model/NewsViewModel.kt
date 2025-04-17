@@ -14,6 +14,8 @@ import androidx.paging.cachedIn
 import com.example.newsappfunto.dao.NewsArticlesDatabase
 import com.example.newsappfunto.util.ResultWrapper
 import com.example.newsappfunto.util.safeApiCall
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

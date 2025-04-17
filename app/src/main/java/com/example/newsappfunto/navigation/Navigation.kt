@@ -1,5 +1,6 @@
 package com.example.newsappfunto.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -8,21 +9,32 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.compose_notes.ui.screens.logIn.LoginScreen
+import com.example.compose_notes.ui.screens.signUp.SignUpScreen
 import com.example.newsappfunto.ui.screens.ArticleDetailScreen.ArticleDetailsWebScreen
 import com.example.newsappfunto.ui.screens.ArticleScreen.NewsListScreen
 import com.example.newsappfunto.ui.screens.SavedArticleScreen.SavedNewsListScreen
+import com.example.newsappfunto.ui.screens.profile.ProfileScreen
 import kotlinx.serialization.Serializable
 
 @Composable
-fun Navigation(navHostController: NavHostController,scaffoldState: SnackbarHostState){
-    NavHost(navController = navHostController, startDestination = "CharactersScreen"){
+fun Navigation(navHostController: NavHostController,scaffoldState: SnackbarHostState,status: Boolean){
+    var start = if (status) "CharactersScreen" else "LogInScreen"
+    NavHost(navController = navHostController, startDestination = start){
 
 
         composable("CharactersScreen"){
             NewsListScreen(navController = navHostController,scaffoldState)
         }
-
-
+        composable("SignUpScreen"){
+            SignUpScreen(navController = navHostController,scaffoldState)
+        }
+        composable("LogInScreen"){
+            LoginScreen(navController = navHostController,scaffoldState)
+        }
+        composable("ProfileScreen"){
+           ProfileScreen(navController = navHostController,scaffoldState)
+        }
         composable("BookmarkScreen"){
             SavedNewsListScreen(navHostController,Modifier,scaffoldState)
         }
@@ -35,6 +47,7 @@ fun Navigation(navHostController: NavHostController,scaffoldState: SnackbarHostS
     }
 }
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class NewsDetails (
     val url : String,
@@ -44,6 +57,4 @@ data class NewsDetails (
     val publishedAt: String?,
     val title: String?,
     val urlToImage: String?,
-    val category: String?
-
-        )
+    val category: String?)
