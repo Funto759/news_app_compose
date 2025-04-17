@@ -193,6 +193,7 @@ fun ArticleDetailsWebScreen(
                                     scope.launch {
                                         signUpViewModel.retrieveArticlesSingleListener(url)
                                         delay(2000)
+                                        signUpViewModel.deleteArticle(articleState.value!!)
 //                                        viewModel.deleteArticles(articleState.value!!)
                                         saveState.value = false
                                     }

@@ -101,6 +101,7 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
             .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
             firebaseFirestoreException?.let {
                 _articlesFlow.value = FirebaseViewState.Error(it.message.toString())
+                println(it.message.toString())
                 return@addSnapshotListener
             }
             querySnapshot?.let {
@@ -276,6 +277,36 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
     fun update(user: String, newUser: User){
         viewModelScope.launch {
             userCollectionRef.document(user).set(newUser).await()
+        }
+    }
+
+    fun deleteArticle(article:Articles) {
+        personCollectionRef
+            .whereEqualTo("url", article.url)
+            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                firebaseFirestoreException?.let {
+                    _userStatus.value = FirebaseViewState.Error(it.message.toString())
+                    return@addSnapshotListener
+                }
+                querySnapshot?.let {
+                    val user = it.documents.firstOrNull()?.id
+
+                    if (user != null) {
+                        try {
+                            delete(user)
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+//                        _userStatus.value = FirebaseViewState.User(user)
+                    }
+                }
+            }
+
+    }
+
+    fun delete(id: String){
+        viewModelScope.launch {
+            personCollectionRef.document(id).delete().await()
         }
     }
 
