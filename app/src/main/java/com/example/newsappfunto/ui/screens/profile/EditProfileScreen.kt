@@ -1,5 +1,6 @@
 package com.example.newsappfunto.ui.screens.profile
 
+import android.os.Parcelable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,18 +52,30 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.compose_notes.ui.screens.logIn.LoginInput
+import com.example.compose_notes.ui.screens.signUp.capitalizeFirst
 import com.example.newsappfunto.data.User
 import com.example.newsappfunto.model.FirebaseAuthentificationViewModel
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+
+@Parcelize
+data class UserInputState(
+    val firstname: String = "" ,
+    val lastname: String = "",
+    val phoneNumber: String = "" ,
+): Parcelable
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState) {
+fun EditProfileScreen(navController: NavController,scaffoldState: SnackbarHostState) {
     val signUpViewModel : FirebaseAuthentificationViewModel = hiltViewModel()
     val status by signUpViewModel.signUpStatus.collectAsStateWithLifecycle()
     val user by signUpViewModel.userStatus.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
     var userState by remember { mutableStateOf<User?>(null) }
+    var userInput by rememberSaveable { mutableStateOf(UserInputState()) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -91,6 +105,11 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
             is FirebaseAuthentificationViewModel.FirebaseViewState.User -> {
                 val userDb = (user as FirebaseAuthentificationViewModel.FirebaseViewState.User).user
                 userState = userDb
+                userInput = userInput.copy(
+                    firstname = userDb.firstname,
+                    lastname = userDb.lastname,
+                    phoneNumber = userDb.phoneNumber
+                    )
             }
             is FirebaseAuthentificationViewModel.FirebaseViewState.Error -> {
                 val error = (user as FirebaseAuthentificationViewModel.FirebaseViewState.Error).message
@@ -152,10 +171,10 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                         // Name (OutlinedTextField for display only)
                         OutlinedTextField(
 //                            value = user.displayName ?: "",
-                            value = "${userState?.firstname.toString()} ${userState?.lastname.toString()}",
-                            onValueChange = {},
-                            readOnly = true,                // user cannot edit
-                            label = { Text("Name") },
+                            value = userInput.firstname,
+                            onValueChange = {userInput = userInput.copy(firstname = it)},
+                            singleLine = true,              // user cannot edit
+                            label = { Text("First Name") },
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -163,7 +182,39 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                                 disabledBorderColor = MaterialTheme.colorScheme.outline,
                                 disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
-                            enabled = false  // visually disable (grays out) to emphasize read-only status
+                            enabled = true  // visually disable (grays out) to emphasize read-only status
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        OutlinedTextField(
+//                            value = user.displayName ?: "",
+                            value = userInput.lastname,
+                            onValueChange = {userInput = userInput.copy(lastname = it)},
+                            singleLine = true,              // user cannot edit
+                            label = { Text("Last Name") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            enabled = true  // visually disable (grays out) to emphasize read-only status
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+//                            value = user.displayName ?: "",
+                            value = userInput.phoneNumber,
+                            onValueChange = {userInput = userInput.copy(phoneNumber = it)},
+                            singleLine = true,               // user cannot edit
+                            label = { Text("Phone Number") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            enabled = true // visually disable (grays out) to emphasize read-only status
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         // Email (OutlinedTextField for display only)
@@ -182,21 +233,7 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                             ),
                             enabled = false
                         )
-                        OutlinedTextField(
-//                            value = user.displayName ?: "",
-                            value = userState?.phoneNumber.toString(),
-                            onValueChange = {},
-                            readOnly = true,                // user cannot edit
-                            label = { Text("Phone Number") },
-                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                            ),
-                            enabled = false  // visually disable (grays out) to emphasize read-only status
-                        )
+
                         Spacer(modifier = Modifier.height(24.dp))
                         // Sign Out button
                         Button(
@@ -204,15 +241,7 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("Sign Out", style = MaterialTheme.typography.labelLarge)
-                        }
-                        Spacer(Modifier.height(10.dp))
-                        Button(
-                            onClick = { navController.navigate("EditProfileScreen") },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Text("Edit Profile", style = MaterialTheme.typography.labelLarge)
+                            Text("Update User", style = MaterialTheme.typography.labelLarge)
                         }
                     }
                 }
@@ -237,7 +266,7 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                             ) {
                                 // Prompt message in the center.
                                 Text(
-                                    text = "Are you sure you want to log out?",
+                                    text = "Are you sure you want to Update your profile?",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     textAlign = TextAlign.Center,
@@ -246,7 +275,9 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                                 // First button: Delete Article.
                                 Button(
                                     onClick = {
-                                      signUpViewModel.signOut()
+                                        var user = User(firstname = userInput.firstname.capitalizeFirst(),lastname = userInput.lastname.capitalizeFirst(),phoneNumber = userInput.phoneNumber, email = userState?.email.toString())
+                                      signUpViewModel.updateUser(userState,user)
+                                        navController.navigate("ProfileScreen")
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -264,7 +295,7 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
-                                        text = "Log Out",
+                                        text = "Update",
                                         style = MaterialTheme.typography.labelLarge,
                                         color = MaterialTheme.colorScheme.onPrimary
                                     )

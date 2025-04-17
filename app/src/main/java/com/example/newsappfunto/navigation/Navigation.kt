@@ -14,6 +14,7 @@ import com.example.compose_notes.ui.screens.signUp.SignUpScreen
 import com.example.newsappfunto.ui.screens.ArticleDetailScreen.ArticleDetailsWebScreen
 import com.example.newsappfunto.ui.screens.ArticleScreen.NewsListScreen
 import com.example.newsappfunto.ui.screens.SavedArticleScreen.SavedNewsListScreen
+import com.example.newsappfunto.ui.screens.profile.EditProfileScreen
 import com.example.newsappfunto.ui.screens.profile.ProfileScreen
 import kotlinx.serialization.Serializable
 
@@ -34,6 +35,9 @@ fun Navigation(navHostController: NavHostController,scaffoldState: SnackbarHostS
         }
         composable("ProfileScreen"){
            ProfileScreen(navController = navHostController,scaffoldState)
+        }
+        composable("EditProfileScreen"){
+            EditProfileScreen(navController = navHostController,scaffoldState)
         }
         composable("BookmarkScreen"){
             SavedNewsListScreen(navHostController,Modifier,scaffoldState)

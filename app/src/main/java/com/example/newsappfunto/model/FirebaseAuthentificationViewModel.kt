@@ -188,15 +188,15 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
     }
 
 
-    fun signUp(user: User){
-        if (user.email.isEmpty() || user.password.isEmpty() || user.password.isEmpty() || user.firstname.isEmpty() || user.lastname.isEmpty() || user.phoneNumber.isEmpty()){
+    fun signUp(user: User,password: String){
+        if (user.email.isEmpty() || user.firstname.isEmpty() || user.lastname.isEmpty() || user.phoneNumber.isEmpty()){
             _signInStatus.value = FirebaseViewState.Error("Email or password is empty")
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
             _signInStatus.value = FirebaseViewState.Loading(true)
             try {
-                auth.createUserWithEmailAndPassword(user.email,user.password)
+                auth.createUserWithEmailAndPassword(user.email,password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful){
                             _signInStatus.value = FirebaseViewState.Authenticated
@@ -244,6 +244,39 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
                     }
                 }
             }
+    }
+
+    fun updateUser(oldUser: User?,newUser: User) {
+            userCollectionRef
+                .whereEqualTo("email", auth.currentUser?.email)
+                .whereEqualTo("firstname", oldUser?.firstname)
+                .whereEqualTo("lastname", oldUser?.lastname)
+                .whereEqualTo("phoneNumber", oldUser?.phoneNumber)
+                .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    firebaseFirestoreException?.let {
+                        _userStatus.value = FirebaseViewState.Error(it.message.toString())
+                        return@addSnapshotListener
+                    }
+                    querySnapshot?.let {
+                        val user = it.documents.firstOrNull()?.id
+
+                        if (user != null) {
+                            try {
+                                update(user,newUser)
+                            } catch (e: Exception) {
+                             println(e.message)
+                            }
+//                        _userStatus.value = FirebaseViewState.User(user)
+                        }
+                    }
+                }
+
+    }
+
+    fun update(user: String, newUser: User){
+        viewModelScope.launch {
+            userCollectionRef.document(user).set(newUser).await()
+        }
     }
 
     sealed class FirebaseViewState(){
