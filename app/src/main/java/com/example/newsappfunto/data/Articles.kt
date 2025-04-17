@@ -8,12 +8,13 @@ import com.androiddevs.mvvmnewsapp.models.Source
 data class Articles(
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
-    val author: String?,
-    val content: String?,
-    val description: String?,
-    val publishedAt: String?,
-    val title: String?,
-    val url: String?,
-    val urlToImage: String?,
-    val category: String?
+    val artId: Int? = -1,
+    val author: String? = "",
+    val content: String? = "",
+    val description: String? = "",
+    val publishedAt: String? = "",
+    val title: String? = "",
+    val url: String? = "",
+    val urlToImage: String? = "",
+    val category: String? = ""
 )

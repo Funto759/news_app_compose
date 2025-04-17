@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.newsappfunto.data.Articles
+import com.example.newsappfunto.model.FirebaseAuthentificationViewModel
 import com.example.newsappfunto.model.NewsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -61,10 +62,11 @@ fun ArticleDetailsWebScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val viewModel: NewsViewModel = hiltViewModel()
-    val db by viewModel.NewsArticleState.collectAsStateWithLifecycle()
+    val signUpViewModel: FirebaseAuthentificationViewModel = hiltViewModel()
+    val db by signUpViewModel.articlesFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.SingleGetArticles(url)
+        signUpViewModel.retrieveArticlesSingleListener(url)
     }
     var isLoading by remember { mutableStateOf(true) }
     var hasError by remember { mutableStateOf(false) }
@@ -79,10 +81,12 @@ fun ArticleDetailsWebScreen(
         mutableStateOf<Articles?>(null)
     }
     when(db){
-        is NewsViewModel.NewsViewState.SuccessSingle -> {
-            val article = (db as NewsViewModel.NewsViewState.SuccessSingle).articles
-            articleState.value = article
-            saveState.value = !article.url.isNullOrEmpty()
+        is FirebaseAuthentificationViewModel.FirebaseViewState.Success -> {
+            val article = (db as FirebaseAuthentificationViewModel.FirebaseViewState.Success).articles
+            if (article.isNotEmpty()) {
+                articleState.value = article[0]
+                saveState.value = !article[0].url.isNullOrEmpty()
+            }
         }
         else -> {
             articleState.value = null
@@ -187,9 +191,9 @@ fun ArticleDetailsWebScreen(
                                         }
                                     }
                                     scope.launch {
-                                        viewModel.SingleGetArticles(url)
+                                        signUpViewModel.retrieveArticlesSingleListener(url)
                                         delay(2000)
-                                        viewModel.deleteArticles(articleState.value!!)
+//                                        viewModel.deleteArticles(articleState.value!!)
                                         saveState.value = false
                                     }
                                 },
@@ -221,10 +225,12 @@ fun ArticleDetailsWebScreen(
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
+                    val articles =Articles(
+                        url = url, author = author.toString(), content = content.toString(), description = description.toString(), publishedAt = publishedAt.toString(), title = title.toString(), urlToImage = urlToImage.toString(), category = category.toString())
                 if (!saveState.value){
                     delay(2000)
-                viewModel.saveArticles(Articles(
-                    url = url, author = author.toString(), content = content.toString(), description = description.toString(), publishedAt = publishedAt.toString(), title = title.toString(), urlToImage = urlToImage.toString(), category = category.toString()))
+//                viewModel.saveArticles(articles)
+                    signUpViewModel.saveFire(articles)
                 saveState.value = true
 
             }else{

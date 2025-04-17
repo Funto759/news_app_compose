@@ -1,6 +1,7 @@
 package com.example.newsappfunto.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.example.newsappfunto.dao.NewsArticlesDatabase
 import com.example.newsappfunto.service.NewsApi
@@ -33,7 +34,12 @@ object ApplicationModule {
     @Provides
     fun provideDao(database: NewsArticlesDatabase) = database.getDao()
 
-
+    @Provides
+    @Singleton
+    fun provideArticlePrefs(
+        @ApplicationContext ctx: Context
+    ): SharedPreferences =
+        ctx.getSharedPreferences("article_prefs", Context.MODE_PRIVATE)
 
     @Singleton
     @Provides
