@@ -1,7 +1,13 @@
 package com.example.newsappfunto.ui.screens.profile
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Parcelable
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,6 +63,8 @@ import com.example.compose_notes.ui.screens.logIn.LoginInput
 import com.example.compose_notes.ui.screens.signUp.capitalizeFirst
 import com.example.newsappfunto.data.User
 import com.example.newsappfunto.model.FirebaseAuthentificationViewModel
+import com.example.newsappfunto.util.bitmapToUri
+import com.example.newsappfunto.util.uriToBitmap
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 
@@ -73,14 +82,54 @@ fun EditProfileScreen(navController: NavController,scaffoldState: SnackbarHostSt
     val signUpViewModel : FirebaseAuthentificationViewModel = hiltViewModel()
     val status by signUpViewModel.signUpStatus.collectAsStateWithLifecycle()
     val user by signUpViewModel.userStatus.collectAsStateWithLifecycle()
+    val imageStatus by signUpViewModel.imageStatus.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
     var userState by remember { mutableStateOf<User?>(null) }
     var userInput by rememberSaveable { mutableStateOf(UserInputState()) }
     val sheetState = rememberModalBottomSheetState()
+    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri->
+        if (uri != null){
+            uri.let {
+                scope.launch {
+                    val bitmap = uriToBitmap(context, it)
+                    if (bitmap != null) {
+                        val firebaseUri = bitmapToUri(context,bitmap)
+                        profileImageUri = firebaseUri
+                    }
+                }
+            }
+        }else{
+            println("Error: Could not convert URI to Bitmap")
+        }
+    }
 
     LaunchedEffect(Unit) {
         signUpViewModel.retrieveUser()
+        signUpViewModel.getProfileImageUri()
+    }
+
+    LaunchedEffect(imageStatus) {
+        when(status){
+            is FirebaseAuthentificationViewModel.FirebaseViewState.Profile ->{
+                val image = (imageStatus as FirebaseAuthentificationViewModel.FirebaseViewState.Profile).image
+                imageUri = image
+            }
+            is FirebaseAuthentificationViewModel.FirebaseViewState.Error -> {
+                val error = (status as FirebaseAuthentificationViewModel.FirebaseViewState.Error).message
+                println(error)
+            }
+            is FirebaseAuthentificationViewModel.FirebaseViewState.Loading -> {
+                val loading = (status as FirebaseAuthentificationViewModel.FirebaseViewState.Loading).loading
+                println(loading)
+            }
+            else -> {}
+        }
     }
 
     LaunchedEffect(status) {
@@ -160,13 +209,15 @@ fun EditProfileScreen(navController: NavController,scaffoldState: SnackbarHostSt
                             .clip(CircleShape)
                             .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                         // Use Coil or similar to load the image from URL
-                        AsyncImage(
-//                            model = user.photoUrl ?: "https://images.app.goo.gl/EUeLiKkonDJaVXU27",
-                            model = "https://images.app.goo.gl/EUeLiKkonDJaVXU27",
-                            contentDescription = "Profile Picture",
-                            modifier = imageModifier,
-                            contentScale = ContentScale.Crop
-                        )
+//                        ClickableAsyncImage(
+////                            model = user.photoUrl ?: "https://images.app.goo.gl/EUeLiKkonDJaVXU27",
+//                            model = imageUri,
+//                            contentDescription = "Profile Picture",
+//                            modifier = imageModifier,
+//                            contentScale = ContentScale.Crop,
+//                            onClick = { imagePickerLauncher.launch(PickVisualMediaRequest(
+//                                ActivityResultContracts.PickVisualMedia.ImageOnly)) }
+//                        )
                         Spacer(modifier = Modifier.height(12.dp))
                         // Name (OutlinedTextField for display only)
                         OutlinedTextField(
@@ -275,8 +326,8 @@ fun EditProfileScreen(navController: NavController,scaffoldState: SnackbarHostSt
                                 // First button: Delete Article.
                                 Button(
                                     onClick = {
-                                        var user = User(firstname = userInput.firstname.capitalizeFirst(),lastname = userInput.lastname.capitalizeFirst(),phoneNumber = userInput.phoneNumber, email = userState?.email.toString())
-                                      signUpViewModel.updateUser(userState,user)
+                                        var user = User(firstname = userInput.firstname.capitalizeFirst(),lastname = userInput.lastname.capitalizeFirst(),phoneNumber = userInput.phoneNumber, email = userState?.email.toString(), image = imageUri)
+                                      signUpViewModel.updateUser(userState,user,profileImageUri)
                                         navController.navigate("ProfileScreen")
                                     },
                                     modifier = Modifier
@@ -330,5 +381,25 @@ fun EditProfileScreen(navController: NavController,scaffoldState: SnackbarHostSt
             }
 
         }
+    }
+
+@Composable
+fun ClickableAsyncImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    onClick: () -> Unit // Add an onClick parameter
+) {
+    Box(
+        modifier = modifier.clickable(onClick = onClick) // Wrap the image with a Box and apply the clickable modifier
+    ) {
+        AsyncImage(
+            model = model,
+            contentDescription = contentDescription,
+            modifier = Modifier.matchParentSize(), // Use matchParentSize to fill the Box
+            contentScale = contentScale
+        )
+    }
     }
 

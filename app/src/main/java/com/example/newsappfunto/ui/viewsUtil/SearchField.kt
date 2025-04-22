@@ -54,3 +54,4 @@ fun SearchField(
             .padding(16.dp)
     )
 }
+

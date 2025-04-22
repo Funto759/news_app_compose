@@ -1,6 +1,7 @@
 package com.example.newsappfunto.model
 
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsappfunto.dao.NewsArticlesDatabase
@@ -30,6 +31,9 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
     val signUpStatus = _signInStatus.asStateFlow()
     var _userStatus = MutableStateFlow<FirebaseViewState>(FirebaseViewState.IDLE)
     val userStatus = _userStatus.asStateFlow()
+      var _imageStatus = MutableStateFlow<FirebaseViewState>(FirebaseViewState.IDLE)
+    val imageStatus = _imageStatus.asStateFlow()
+
 
     init {
         checkAuthStatus()
@@ -247,7 +251,7 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
             }
     }
 
-    fun updateUser(oldUser: User?,newUser: User) {
+    fun updateUser(oldUser: User?,newUser: User,profileImageUri: Uri?) {
             userCollectionRef
                 .whereEqualTo("email", auth.currentUser?.email)
                 .whereEqualTo("firstname", oldUser?.firstname)
@@ -263,7 +267,7 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
 
                         if (user != null) {
                             try {
-                                update(user,newUser)
+                                update(user,newUser,profileImageUri)
                             } catch (e: Exception) {
                              println(e.message)
                             }
@@ -274,9 +278,37 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
 
     }
 
-    fun update(user: String, newUser: User){
+    fun getProfileImageUri(){
+        viewModelScope.launch {
+            _imageStatus.value = FirebaseViewState.Loading(true)
+            try {
+                val user = auth.currentUser
+                _imageStatus.value = FirebaseViewState.Loading(false)
+                _imageStatus.value = FirebaseViewState.Profile(user?.photoUrl!!)
+
+            }catch (e: Exception){
+                _imageStatus.value = FirebaseViewState.Loading(false)
+                _imageStatus.value = FirebaseViewState.Error(e.message.toString())
+                println(e.message)
+            }
+        }
+    }
+
+    fun update(user: String, newUser: User,profileImageUri: Uri?){
         viewModelScope.launch {
             userCollectionRef.document(user).set(newUser).await()
+           auth.currentUser.let {
+               val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                   .setPhotoUri(profileImageUri)
+                   .build()
+               viewModelScope.launch {
+                   try {
+                       it?.updateProfile(profileUpdates)?.await()
+                   }catch (e: Exception){
+                       println(e.message)
+                   }
+               }
+           }
         }
     }
 
@@ -316,6 +348,7 @@ class FirebaseAuthentificationViewModel@Inject constructor(val db: NewsArticlesD
         object Authenticated:FirebaseViewState()
         object UnAuthenticated:FirebaseViewState()
         data class Loading(val loading:Boolean):FirebaseViewState()
+        data class Profile(val image:Uri):FirebaseViewState()
         data class Error(val message:String):FirebaseViewState()
         object IDLE:FirebaseViewState()
 

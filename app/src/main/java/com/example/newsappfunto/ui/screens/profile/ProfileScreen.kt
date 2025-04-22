@@ -1,5 +1,6 @@
 package com.example.newsappfunto.ui.screens.profile
 
+import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,13 +61,35 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
     val signUpViewModel : FirebaseAuthentificationViewModel = hiltViewModel()
     val status by signUpViewModel.signUpStatus.collectAsStateWithLifecycle()
     val user by signUpViewModel.userStatus.collectAsStateWithLifecycle()
+    val imageStatus by signUpViewModel.imageStatus.collectAsStateWithLifecycle()
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var showBottomSheet by remember { mutableStateOf(false) }
     var userState by remember { mutableStateOf<User?>(null) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
+
     LaunchedEffect(Unit) {
         signUpViewModel.retrieveUser()
+        signUpViewModel.getProfileImageUri()
+    }
+
+    LaunchedEffect(imageStatus) {
+        when(status){
+            is FirebaseAuthentificationViewModel.FirebaseViewState.Profile ->{
+                val image = (imageStatus as FirebaseAuthentificationViewModel.FirebaseViewState.Profile).image
+                imageUri = image
+            }
+            is FirebaseAuthentificationViewModel.FirebaseViewState.Error -> {
+                val error = (status as FirebaseAuthentificationViewModel.FirebaseViewState.Error).message
+                println(error)
+            }
+            is FirebaseAuthentificationViewModel.FirebaseViewState.Loading -> {
+                val loading = (status as FirebaseAuthentificationViewModel.FirebaseViewState.Loading).loading
+                println(loading)
+            }
+            else -> {}
+        }
     }
 
     LaunchedEffect(status) {
@@ -141,13 +164,13 @@ fun ProfileScreen(navController: NavController,scaffoldState: SnackbarHostState)
                             .clip(CircleShape)
                             .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                         // Use Coil or similar to load the image from URL
-                        AsyncImage(
-//                            model = user.photoUrl ?: "https://images.app.goo.gl/EUeLiKkonDJaVXU27",
-                            model = "https://images.app.goo.gl/EUeLiKkonDJaVXU27",
-                            contentDescription = "Profile Picture",
-                            modifier = imageModifier,
-                            contentScale = ContentScale.Crop
-                        )
+//                        AsyncImage(
+////                            model = user.photoUrl ?: "https://images.app.goo.gl/EUeLiKkonDJaVXU27",
+//                            model = userState?.image,
+//                            contentDescription = "Profile Picture",
+//                            modifier = imageModifier,
+//                            contentScale = ContentScale.Crop
+//                        )
                         Spacer(modifier = Modifier.height(12.dp))
                         // Name (OutlinedTextField for display only)
                         OutlinedTextField(

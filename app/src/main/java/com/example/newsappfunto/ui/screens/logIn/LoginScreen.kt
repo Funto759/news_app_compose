@@ -222,7 +222,7 @@ fun LoginScreen(navController: NavController,scaffoldState: SnackbarHostState) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { viewModel.login(input.email, input.password) },
+                        onClick = { viewModel.login(input.email.removeWhitespace(), input.password.removeWhitespace()) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -278,3 +278,6 @@ fun EditBox(
             .padding(16.dp)
     )
 }
+
+fun String.removeWhitespace(): String =
+    replace("\\s+".toRegex(), "")
